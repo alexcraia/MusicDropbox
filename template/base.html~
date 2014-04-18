@@ -1,3 +1,0 @@
-
-<head>
-<title>{% block title %}Home Page{% endblock %} | MusicDropbox </title>
