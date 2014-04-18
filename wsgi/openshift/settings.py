@@ -156,6 +156,9 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'dropboxConnect',
+    'south',
+    'django_extensions',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -180,3 +183,9 @@ LOGGING = {
         },
     }
 }
+
+
+DROPBOX_CONSUMER_KEY = 'm240r0fmo0tl03p'
+DROPBOX_CONSUMER_SECRET = 'hpi94lwee6mn18t'
+DROPBOX_ACCESS_TOKEN = '8dtr74fmql3gqflc'
+DROPBOX_ACCESS_TOKEN_SECRET = 'phc6jdxuq3wf7dy'

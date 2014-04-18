@@ -1,0 +1,16 @@
+import dropbox
+from django.conf import settings
+from django.shortcuts import render_to_response
+from dropboxConn import DropObj
+
+
+
+def index(request):
+    dropboxx = DropObj()
+    if dropbox.client:
+        drop = "MERGE"
+    else:
+        dropboxx.connect()
+        drop = "Se connecteaza"
+    dropboxx.get_account_info()
+    return render_to_response('index.html', {'Dropbox': drop})  
