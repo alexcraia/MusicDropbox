@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<form action="/login/" method="POST">
+  {% csrf_token %}
+  {% if next %}
+  <input type="hidden" name="next" value="{{ next }}" />
+  {% endif %}
+  Username:
+  <input type="text" name="username" value="{{ username }}"/>
+  Password:
+  <input type="password" name="password" value="" /><br/>
+  <input type="submit" value="Login"/>
+</form>
+{% endblock %}

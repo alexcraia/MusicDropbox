@@ -1,4 +1,5 @@
 from django.conf import settings
+from dropboxConnect.models import Client
 APP_KEY = settings.DROPBOX_CONSUMER_KEY
 APP_SECRET = settings.DROPBOX_CONSUMER_SECRET
 
@@ -27,20 +28,20 @@ class DropObj(object):
         
         config_path = os.path.join(self.base_path, "config.ini")
  
-        self.get_url_connect()
  
     #----------------------------------------------------------------------
-    def get_url_connect(self):
+    def get_url_connect(self, user):
+        client = Client.objects.get(user=user)
         app_key = APP_KEY
         app_secret = APP_SECRET
         access_type = "dropbox"
         session = dropbox.session.DropboxSession(app_key,
                                                  app_secret,
                                                  access_type)
-        request_token = session.obtain_request_token()
-        url = session.build_authorize_url(request_token)
-        
+        req = self.request_token(client.key_token, client.secret_token)
+        url = session.build_authorize_url(req,callback="http://google.ro")
         return url
+
     def connect(self):
         """
         Connect and authenticate with dropbox
@@ -64,7 +65,24 @@ class DropObj(object):
  
         self.client = dropbox.client.DropboxClient(session)
  
-    #----------------------------------------------------------------------
+   #----------------------------------------------------------------------
+    
+    def save_credentials(self, user):
+        access_type = 'dropbox'
+        session = dropbox.session.DropboxSession(APP_KEY,
+                                                 APP_SECRET,
+                                                 access_type)
+        request_token = session.obtain_request_token()
+        Client.objects.get_or_create(user=user)
+        client = Client.objects.get(user=user)
+        client.key_token = request_token.key
+        client.secret_token = request_token.secret
+        client.save()
+
+        
+    def request_token(self,key, secret):
+        self.key = key
+        self.secret = secret
     def download_file(self, filename=None, outDir=None):
         """
         Download either the file passed to the class or the file passed

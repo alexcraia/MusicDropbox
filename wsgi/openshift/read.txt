@@ -1,0 +1,5 @@
+Put on database access token.
+http://stackoverflow.com/questions/10549326/python-dropbox-api-save-token-file -- view here one good example.
+I can use session.set_token, before i can DropboxClient(session)
+This is all.. :)))
+Nice. I don't understande, what put oauth_callback to url, to build_authentication_url.... I can create one hack, adding oauth_callback to url manual, but this is not elegant job.
