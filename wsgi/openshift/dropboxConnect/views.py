@@ -1,5 +1,5 @@
 import dropbox
-from dropboxConnect.models import Client
+from dropboxConnect.models import Client, AllMusic
 from django.conf import settings
 from django.shortcuts import render_to_response, redirect
 from dropboxConn import DropObj
@@ -13,13 +13,9 @@ APP_SECRET = settings.DROPBOX_CONSUMER_SECRET
 
 
 def index(request):
-    dropboxx = DropObj()
-    if dropbox.client:
-        drop = "MERGE"
-    else:
-        dropboxx.connect()
-        drop = "Se connecteaza"
-    dropboxx.get_account_info()
+    user = request.user
+    dropboxx = DropObj(user.client.key_token, user.client.secret_token, user)
+    drop = dropboxx.get_account_info()
     return render_to_response('index.html', {'Dropbox': drop})  
 
 def login(request):
@@ -35,8 +31,10 @@ def login(request):
         if user is not None:
             if user.is_active:
                 auth_login(request, user)
-                state = "You're successfully logged in!"
-                return redirect('/')
+                allmusic = AllMusic.objects.filter(user=user)
+                if allmusic:
+                    return redirect('/')
+                return redirect('/select_music/')
             else:
                 state = "Your account is not active."
     c['state'] = state
@@ -49,10 +47,25 @@ def register_user(request):
         if form.is_valid():
             user = form.save()
             drop = DropObj()
-            drop.save_credentials(user)
-
-            return redirect('/login/')
+            Client.objects.create(user=user)
+            url = drop.get_url_connect(user)
+            return redirect(url)
     args= {}
     args.update(csrf(request))
     args['form'] = UserCreationForm()
     return render_to_response('register.html', args)
+
+def first_connect(request):
+    if request.GET.get('oauth_token'):
+        token = request.GET.get('oauth_token')
+        client = Client.objects.get(request_key = token)
+        user = client.user
+        drop = DropObj()
+        drop.save_credentials(user)
+    return redirect('/login/')
+
+def select_music(request):
+    user = request.user
+    drop = DropObj(user.client.key_token, user.client.secret_token, user)
+    sounds = drop.view_all_mp3()
+    return render_to_response('select_music.html', {'sounds': sounds})

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+{{ sounds.name }}
+{% for x,y in sounds.items %}
+<h3><input type="checkbox" >{{ x|upper }}</input></h3>
+{% for f in y %}
+<input type="checkbox" name="{{x}}" value="{{ f.index }}">{{ f.name }}</input><br/>
+{% endfor %}
+</br>
+{% endfor %}
+{% endblock %}
